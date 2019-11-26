@@ -1,4 +1,10 @@
 package com.feture.learnfilter.consts;
 
-public class RequestConst {
+/**
+ * 请求常量
+ */
+public final class RequestConst {
+
+    public final static String RouteDispatchPrefix = "/openapi";
+
 }

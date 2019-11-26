@@ -22,11 +22,13 @@ public class RequestService {
 
     private static Logger logger = LoggerFactory.getLogger(RequestService.class);
 
+    private static final ThreadLocal<OpenApiRequest> unifyRequest = ThreadLocal.withInitial(() -> new OpenApiRequest());
+
     @Autowired
     private ChannelCredentialService channelCredentialService;
 
 
-    public void verifyRequestBody(OpenApiRequest openApiRequest) throws IllegalArgumentException{
+    public void verifyRequestBody(OpenApiRequest openApiRequest) throws IllegalArgumentException {
         String appKey = channelCredentialService.getAppKeyByChannelKey(openApiRequest.getChannelKey());
         if (StringUtils.isEmpty(appKey))
             throw new IllegalArgumentException("非法渠道");
@@ -35,6 +37,8 @@ public class RequestService {
         if (!sign.toUpperCase().equals(openApiRequest.getSign().toUpperCase())) {
             throw new IllegalArgumentException("非法签名");
         }
+
+        unifyRequest.set(openApiRequest);
     }
 
     public void mockErrorResponse(ServletResponse response, String errorMessage) {
@@ -49,5 +53,13 @@ public class RequestService {
         } catch (IOException e) {
             logger.error("mockResponse error(IOException) {}", e);
         }
+    }
+
+    /**
+     * 获取统一请求参数
+     * @return
+     */
+    public OpenApiRequest getUnifyRequest() {
+        return unifyRequest.get();
     }
 }

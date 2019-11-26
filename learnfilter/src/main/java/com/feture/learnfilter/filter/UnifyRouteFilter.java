@@ -1,5 +1,6 @@
 package com.feture.learnfilter.filter;
 
+import com.feture.learnfilter.consts.RequestConst;
 import com.feture.learnfilter.model.OpenApiRequest;
 import com.feture.learnfilter.service.RequestService;
 import org.slf4j.Logger;
@@ -19,8 +20,6 @@ public class UnifyRouteFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(UnifyRouteFilter.class);
 
-    private final static String RouteDispatchPrefix = "/openapi";
-
     @Autowired
     private RequestService requestService;
 
@@ -33,11 +32,11 @@ public class UnifyRouteFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
         OpenApiRequest openApiRequest = null;
         try {
-            if (request instanceof HttpServletRequest && ((HttpServletRequest) request).getRequestURI().contains(RouteDispatchPrefix) && HttpMethod.POST.toString().equals(((HttpServletRequest) request).getMethod())) {
+            if (request instanceof HttpServletRequest && ((HttpServletRequest) request).getRequestURI().contains(RequestConst.RouteDispatchPrefix) && HttpMethod.POST.toString().equals(((HttpServletRequest) request).getMethod())) {
                 RewriteHttpBodyRequest requestWrapper = new RewriteHttpBodyRequest((HttpServletRequest) request);
                 openApiRequest = requestWrapper.getOpenApiRequest();
                 requestService.verifyRequestBody(openApiRequest);
-                request.getRequestDispatcher(RouteDispatchPrefix + "/" + requestWrapper.getOpenApiRequest().getMethod().replace(".", "/")).forward(requestWrapper, response);
+                request.getRequestDispatcher(RequestConst.RouteDispatchPrefix + "/" + requestWrapper.getOpenApiRequest().getMethod().replace(".", "/")).forward(requestWrapper, response);
             } else {
                 chain.doFilter(request, response);
             }
