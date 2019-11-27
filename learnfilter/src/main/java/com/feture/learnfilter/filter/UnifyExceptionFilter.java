@@ -2,6 +2,7 @@ package com.feture.learnfilter.filter;
 
 import com.feture.learnfilter.consts.RequestConst;
 import com.feture.learnfilter.consts.ResponseCode;
+import com.feture.learnfilter.exception.BaseSystemException;
 import com.feture.learnfilter.model.OpenApiRequest;
 import com.feture.learnfilter.model.OpenApiResponse;
 import com.feture.learnfilter.service.RequestService;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = {"com.feture.learnfilter.openapi"})
@@ -23,6 +23,12 @@ public class UnifyExceptionFilter {
     private RequestService requestService;
 
 
+    @ExceptionHandler(BaseSystemException.class)
+    public OpenApiResponse handlerSystemException(BaseSystemException e) {
+        logError(e);
+        return e.getOpenApiResponse();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public OpenApiResponse handlerIllegalArgumentException(IllegalArgumentException e) {
         logError(e);
@@ -30,7 +36,6 @@ public class UnifyExceptionFilter {
 
         openApiResponse.setCode(ResponseCode.InvalidArgument.getCode());
         openApiResponse.setMessage(e.getMessage());
-
         return openApiResponse;
     }
 

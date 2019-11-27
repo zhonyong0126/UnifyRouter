@@ -19,6 +19,14 @@ public class OpenApiResponse {
         this.message = message;
     }
 
+
+    public OpenApiResponse(Integer code, String message, String subCode, String subMessage) {
+        this.code = code;
+        this.message = message;
+        this.subCode = subCode;
+        this.subMessage = subMessage;
+    }
+
     /// <summary>
     /// 公共返回码，具体见NextPms.OpenAPI.Enums.ResponseCode
     /// </summary>
